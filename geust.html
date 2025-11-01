@@ -1,11 +1,103 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Guest List</title>
+  <style>
+    body {
+      font-family: "Poppins", sans-serif;
+      background: linear-gradient(135deg, #f7f9fc, #e3f2fd);
+      color: #333;
+      margin: 0;
+      padding: 20px;
+    }
+    h1 {
+      text-align: center;
+      color: #2c3e50;
+    }
+    table {
+      border-collapse: collapse;
+      width: 80%;
+      margin: 30px auto;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+      border-radius: 8px;
+      overflow: hidden;
+      background: #fff;
+    }
+    th, td {
+      padding: 14px 20px;
+      text-align: left;
+    }
+    th {
+      background-color: #2196f3;
+      color: white;
+      font-weight: 600;
+      text-transform: uppercase;
+    }
+    tr:nth-child(even) {
+      background-color: #f9f9f9;
+    }
+    tr:hover {
+      background-color: #e3f2fd;
+    }
+    .loading {
+      text-align: center;
+      color: #666;
+      margin-top: 50px;
+      font-size: 18px;
+    }
+  </style>
+  <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+  <script>
+    // Load Google Charts
+    google.charts.load('current', { packages: ['corechart'] });
+    google.charts.setOnLoadCallback(loadGuestList);
+
+    function loadGuestList() {
+      const sheetId = '1LsP1wyjE3BDx1_6zu9p-xdU0Zxh-Ahfb0r3psPLi8Fo'; // ✅ Your sheet ID
+      const sheetName = 'WebApp'; // ✅ Your sheet name (tab name)
+      const query = encodeURIComponent('SELECT A, B'); // Select columns A (Name), B (Category)
+      const url = `https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?sheet=${sheetName}&tq=${query}`;
+
+      fetch(url)
+        .then(res => res.text())
+        .then(rep => {
+          // Remove Google’s JS wrapper
+          const jsonData = JSON.parse(rep.substr(47).slice(0, -2));
+          const table = document.getElementById('guestTable');
+          const tbody = table.querySelector('tbody');
+          tbody.innerHTML = ''; // clear any old data
+
+          jsonData.table.rows.forEach(row => {
+            const tr = document.createElement('tr');
+            const name = row.c[0] ? row.c[0].v : '';
+            const category = row.c[1] ? row.c[1].v : '';
+            tr.innerHTML = `<td>${name}</td><td>${category}</td>`;
+            tbody.appendChild(tr);
+          });
+
+          document.querySelector('.loading').style.display = 'none';
+          table.style.display = 'table';
+        })
+        .catch(err => {
+          console.error('Error fetching Google Sheet:', err);
+          document.querySelector('.loading').innerText = 'Failed to load guest list.';
+        });
+    }
+  </script>
 </head>
 <body>
-    
+  <h1>Wedding Guest List</h1>
+  <div class="loading">Loading guest list, please wait...</div>
+  <table id="guestTable" style="display:none;">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Category</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
 </body>
 </html>
