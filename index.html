@@ -110,12 +110,15 @@
       const fileInput = document.getElementById("file-input");
       const resultElement = document.getElementById("scan-result");
       const file = fileInput.files[0];
+
       if (!file) {
         alert("Please select an image file first.");
         return;
       }
 
-      Html5Qrcode.scanFile(file, true)
+      // Use a temporary Html5Qrcode instance
+      const html5QrFile = new Html5Qrcode(/* element id */ "reader");
+      html5QrFile.scanFile(file, true)
         .then(qrCodeMessage => {
           resultElement.innerText = "Scanned Result: " + qrCodeMessage;
         })
