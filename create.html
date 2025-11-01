@@ -5,7 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Ishmael weds Priscilla</title>
   <style>
-    /* Background */
     body {
       font-family: 'Arial', sans-serif;
       min-height: 100vh;
@@ -16,20 +15,13 @@
       background: url('img/Ishandpri.JPG') no-repeat center center fixed;
       background-size: cover;
     }
-
-    /* Overlay */
     body::before {
       content: "";
       position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      /* background: rgba(255, 255, 255, 0.85); */
+      top: 0; left: 0;
+      width: 100%; height: 100%;
       z-index: 0;
     }
-
-    /* Container */
     .container {
       position: relative;
       z-index: 1;
@@ -41,7 +33,6 @@
       text-align: center;
       box-shadow: 0 8px 20px rgba(0,0,0,0.2);
     }
-
     h1 {
       font-family: 'Georgia', serif;
       font-size: 28px;
@@ -49,7 +40,6 @@
       color: #803412;
       text-shadow: 1px 1px 3px rgba(0,0,0,0.2);
     }
-
     input, button {
       width: 100%;
       padding: 12px;
@@ -59,34 +49,16 @@
       font-size: 16px;
       box-shadow: 0 3px 6px rgba(0,0,0,0.1);
     }
-
-    input {
-      border: 1px solid #ccc;
-    }
-
+    input { border: 1px solid #ccc; }
     button {
       background: #803412;
       color: white;
       cursor: pointer;
       transition: 0.3s;
     }
-
-    button:hover {
-      background: #803412;
-    }
-
-    #download-btn {
-      background: #803412;
-    }
-
-    #download-btn:hover {
-      background: #803412;
-    }
-
-    #qrcode {
-      margin-top: 15px;
-    }
-
+    button:hover { background: #a34d1d; }
+    #download-btn { display: none; }
+    #qrcode { margin-top: 15px; }
     a {
       display: inline-block;
       margin-top: 12px;
@@ -94,20 +66,10 @@
       text-decoration: none;
       font-weight: bold;
     }
-
-    a:hover {
-      text-decoration: underline;
-    }
-
+    a:hover { text-decoration: underline; }
     @media (max-width: 500px) {
-      h1 {
-        font-size: 24px;
-      }
-
-      input, button {
-        font-size: 15px;
-        padding: 10px;
-      }
+      h1 { font-size: 24px; }
+      input, button { font-size: 15px; padding: 10px; }
     }
   </style>
 </head>
@@ -116,7 +78,7 @@
     <h1>Ishmael weds Priscilla</h1>
     <input type="text" id="text" placeholder="Enter your message or link..." />
     <button onclick="generateQR()">Generate QR Code</button>
-    <button id="download-btn" style="display:none;" onclick="downloadQR()">Download QR Code</button>
+    <button id="download-btn" onclick="downloadQR()">Download QR Code</button>
     <div id="qrcode"></div>
     <a href="index.html">Go to Scanner →</a>
   </div>
@@ -126,36 +88,56 @@
     let qr;
 
     function generateQR() {
-      const text = document.getElementById("text").value;
+      const text = document.getElementById("text").value.trim();
       const qrContainer = document.getElementById("qrcode");
       qrContainer.innerHTML = "";
-      if (text.trim() === "") {
+
+      if (!text) {
         alert("Please enter some text");
         return;
       }
 
+      // Generate QR as canvas
       qr = new QRCode(qrContainer, {
         text: text,
         width: 220,
         height: 220,
-        colorDark : "#d6336c",
-        colorLight : "#ffffff",
-        correctLevel : QRCode.CorrectLevel.H
+        colorDark: "#d6336c",
+        colorLight: "#ffffff",
+        correctLevel: QRCode.CorrectLevel.H
       });
 
-      document.getElementById("download-btn").style.display = "block";
+      setTimeout(() => {
+        document.getElementById("download-btn").style.display = "block";
+      }, 500);
     }
 
     function downloadQR() {
-      const qrImg = document.querySelector("#qrcode img");
-      if (!qrImg) {
-        alert("No QR code to download!");
-        return;
+      // Try to find canvas first (mobile friendly)
+      const canvas = document.querySelector("#qrcode canvas");
+      let dataURL;
+
+      if (canvas) {
+        dataURL = canvas.toDataURL("image/png");
+      } else {
+        const img = document.querySelector("#qrcode img");
+        if (!img) {
+          alert("No QR code found!");
+          return;
+        }
+        dataURL = img.src;
       }
+
       const link = document.createElement("a");
-      link.href = qrImg.src;
+      link.href = dataURL;
       link.download = "ishmael-priscilla-qr.png";
-      link.click();
+
+      // Mobile fallback
+      if (/iPhone|iPad|iPod|Android/i.test(navigator.userAgent)) {
+        window.open(dataURL, "_blank");
+      } else {
+        link.click();
+      }
     }
   </script>
 </body>
