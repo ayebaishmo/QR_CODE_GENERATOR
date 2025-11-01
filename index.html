@@ -3,56 +3,123 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>QR Code Scanner</title>
+  <title>Ishmael weds Priscilla - Scanner</title>
   <style>
+    /* Background */
     body {
-      font-family: Arial, sans-serif;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
+      font-family: 'Arial', sans-serif;
       min-height: 100vh;
-      background: #f5f5f5;
       margin: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background: url('https://images.unsplash.com/photo-1512149673957-6b3ffb2f6b1d?auto=format&fit=crop&w=1400&q=80') no-repeat center center fixed;
+      background-size: cover;
     }
+
+    /* Overlay */
+    body::before {
+      content: "";
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(255, 255, 255, 0.85);
+      z-index: 0;
+    }
+
+    /* Container */
     .container {
-      background: white;
-      padding: 20px;
-      border-radius: 10px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-      width: 90%;
+      position: relative;
+      z-index: 1;
+      background: #ffffffdd;
+      padding: 25px 20px;
+      border-radius: 15px;
       max-width: 400px;
+      width: 90%;
       text-align: center;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.2);
     }
+
+    h1 {
+      font-family: 'Georgia', serif;
+      font-size: 26px;
+      margin-bottom: 15px;
+      color: #d6336c;
+      text-shadow: 1px 1px 3px rgba(0,0,0,0.2);
+    }
+
     button, input[type="file"] {
       width: 100%;
-      padding: 10px;
-      margin: 5px 0;
-      border: 1px solid #ccc;
-      border-radius: 5px;
+      padding: 12px;
+      margin: 8px 0;
+      border: none;
+      border-radius: 10px;
       font-size: 16px;
+      box-shadow: 0 3px 6px rgba(0,0,0,0.1);
+      cursor: pointer;
+      transition: 0.3s;
     }
+
+    button {
+      background: #d6336c;
+      color: white;
+    }
+
+    button:hover {
+      background: #a71d45;
+    }
+
+    input[type="file"] {
+      border: 1px solid #ccc;
+      background: #fff;
+    }
+
     #reader {
       width: 100%;
       margin-top: 15px;
     }
+
+    #scan-result {
+      margin-top: 12px;
+      font-weight: bold;
+      color: #6f42c1;
+      word-break: break-word;
+    }
+
     a {
       display: inline-block;
-      margin-top: 15px;
-      color: #007bff;
+      margin-top: 12px;
+      color: #d6336c;
       text-decoration: none;
+      font-weight: bold;
+    }
+
+    a:hover {
+      text-decoration: underline;
+    }
+
+    @media (max-width: 500px) {
+      h1 {
+        font-size: 22px;
+      }
+      button, input[type="file"] {
+        font-size: 15px;
+        padding: 10px;
+      }
     }
   </style>
 </head>
 <body>
   <div class="container">
-    <h1>QR Code Scanner</h1>
-    
+    <h1>Ishmael weds Priscilla</h1>
+
     <button onclick="startScan()">Start Camera Scanner</button>
     <button onclick="stopScan()">Stop Camera</button>
-    
+
     <hr>
-    
+
     <input type="file" id="file-input" accept="image/*" />
     <button onclick="scanFile()">Scan QR from Image</button>
 
@@ -116,8 +183,7 @@
         return;
       }
 
-      // Use a temporary Html5Qrcode instance
-      const html5QrFile = new Html5Qrcode(/* element id */ "reader");
+      const html5QrFile = new Html5Qrcode("reader");
       html5QrFile.scanFile(file, true)
         .then(qrCodeMessage => {
           resultElement.innerText = "Scanned Result: " + qrCodeMessage;
