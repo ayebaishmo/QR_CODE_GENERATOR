@@ -16,6 +16,27 @@
       text-align: center;
       color: #2c3e50;
     }
+
+    /* 🔍 Search Bar Styling */
+    .search-container {
+      text-align: center;
+      margin: 20px auto;
+    }
+    #searchInput {
+      width: 60%;
+      max-width: 400px;
+      padding: 10px 15px;
+      font-size: 16px;
+      border: 2px solid #803412;
+      border-radius: 5px;
+      outline: none;
+      transition: 0.3s;
+    }
+    #searchInput:focus {
+      border-color: #a34d1d;
+      box-shadow: 0 0 5px rgba(128, 52, 18, 0.5);
+    }
+
     table {
       border-collapse: collapse;
       width: 80%;
@@ -30,7 +51,7 @@
       text-align: left;
     }
     th {
-      background-color: #2196f3;
+      background-color: #803412;
       color: white;
       font-weight: 600;
       text-transform: uppercase;
@@ -48,31 +69,30 @@
       font-size: 18px;
     }
   </style>
+
   <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
   <script>
-    // Load Google Charts
     google.charts.load('current', { packages: ['corechart'] });
     google.charts.setOnLoadCallback(loadGuestList);
 
     function loadGuestList() {
-      const sheetId = '1LsP1wyjE3BDx1_6zu9p-xdU0Zxh-Ahfb0r3psPLi8Fo'; // ✅ Your sheet ID
-      const sheetName = 'WebApp'; // ✅ Your sheet name (tab name)
-      const query = encodeURIComponent('SELECT A, B'); // Select columns A (Name), B (Category)
+      const sheetId = '1LsP1wyjE3BDx1_6zu9p-xdU0Zxh-Ahfb0r3psPLi8Fo';
+      const sheetName = 'WebApp';
+      const query = encodeURIComponent('SELECT A, B');
       const url = `https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?sheet=${sheetName}&tq=${query}`;
 
       fetch(url)
         .then(res => res.text())
         .then(rep => {
-          // Remove Google’s JS wrapper
           const jsonData = JSON.parse(rep.substr(47).slice(0, -2));
           const table = document.getElementById('guestTable');
           const tbody = table.querySelector('tbody');
-          tbody.innerHTML = ''; // clear any old data
+          tbody.innerHTML = '';
 
           jsonData.table.rows.forEach(row => {
-            const tr = document.createElement('tr');
             const name = row.c[0] ? row.c[0].v : '';
             const category = row.c[1] ? row.c[1].v : '';
+            const tr = document.createElement('tr');
             tr.innerHTML = `<td>${name}</td><td>${category}</td>`;
             tbody.appendChild(tr);
           });
@@ -85,11 +105,36 @@
           document.querySelector('.loading').innerText = 'Failed to load guest list.';
         });
     }
+
+    // 🔍 Filter table rows as user types
+    function searchGuest() {
+      const input = document.getElementById('searchInput').value.toLowerCase();
+      const rows = document.querySelectorAll('#guestTable tbody tr');
+      rows.forEach(row => {
+        const name = row.cells[0].textContent.toLowerCase();
+        if (name.includes(input)) {
+          row.style.display = '';
+        } else {
+          row.style.display = 'none';
+        }
+      });
+    }
   </script>
 </head>
 <body>
   <h1>Wedding Guest List</h1>
+
+  <div class="search-container">
+    <input
+      type="text"
+      id="searchInput"
+      placeholder="Search guest by name..."
+      onkeyup="searchGuest()"
+    />
+  </div>
+
   <div class="loading">Loading guest list, please wait...</div>
+
   <table id="guestTable" style="display:none;">
     <thead>
       <tr>
