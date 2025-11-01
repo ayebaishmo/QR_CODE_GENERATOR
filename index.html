@@ -24,7 +24,7 @@
       max-width: 400px;
       text-align: center;
     }
-    button {
+    button, input[type="file"] {
       width: 100%;
       padding: 10px;
       margin: 5px 0;
@@ -47,8 +47,15 @@
 <body>
   <div class="container">
     <h1>QR Code Scanner</h1>
-    <button onclick="startScan()">Start Scanner</button>
-    <button onclick="stopScan()">Stop Scanner</button>
+    
+    <button onclick="startScan()">Start Camera Scanner</button>
+    <button onclick="stopScan()">Stop Camera</button>
+    
+    <hr>
+    
+    <input type="file" id="file-input" accept="image/*" />
+    <button onclick="scanFile()">Scan QR from Image</button>
+
     <div id="reader"></div>
     <p id="scan-result"></p>
     <a href="generator.html">← Back to Generator</a>
@@ -66,7 +73,6 @@
 
       Html5Qrcode.getCameras().then(devices => {
         if (devices && devices.length) {
-          // Pick the back camera
           let cameraId = devices[0].id;
           for (let cam of devices) {
             if (cam.label.toLowerCase().includes("back") || cam.label.toLowerCase().includes("rear") || cam.label.toLowerCase().includes("environment")) {
@@ -79,17 +85,12 @@
             cameraId,
             { fps: 10, qrbox: 250 },
             qrCodeMessage => {
-              // Display scanned text
               resultElement.innerText = "Scanned Result: " + qrCodeMessage;
-
-              // Stop scanner and clear camera
               html5QrCode.stop().then(() => {
-                reader.innerHTML = ""; // remove camera feed
-              }).catch(err => console.error("Stop failed:", err));
+                reader.innerHTML = "";
+              });
             },
-            errorMessage => {
-              // ignore scanning errors
-            }
+            errorMessage => {}
           ).catch(err => console.error("Start failed:", err));
         } else {
           alert("No camera found on this device.");
@@ -103,6 +104,25 @@
           document.getElementById("reader").innerHTML = "";
         }).catch(err => console.error(err));
       }
+    }
+
+    function scanFile() {
+      const fileInput = document.getElementById("file-input");
+      const resultElement = document.getElementById("scan-result");
+      const file = fileInput.files[0];
+      if (!file) {
+        alert("Please select an image file first.");
+        return;
+      }
+
+      Html5Qrcode.scanFile(file, true)
+        .then(qrCodeMessage => {
+          resultElement.innerText = "Scanned Result: " + qrCodeMessage;
+        })
+        .catch(err => {
+          resultElement.innerText = "No QR code found in image.";
+          console.error(err);
+        });
     }
   </script>
 </body>
