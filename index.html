@@ -83,7 +83,7 @@
       });
     }
 
-    // Start QR Scanner
+    // Start QR Scanner (use back camera on mobile)
     function startScan() {
       const resultElement = document.getElementById("scan-result");
       const reader = document.getElementById("reader");
@@ -92,7 +92,15 @@
       const html5QrCode = new Html5Qrcode("reader");
       Html5Qrcode.getCameras().then(devices => {
         if (devices && devices.length) {
-          const cameraId = devices[0].id;
+          // Try to select the back camera
+          let cameraId = devices[0].id;
+          for (let cam of devices) {
+            if (cam.label.toLowerCase().includes("back") || cam.label.toLowerCase().includes("rear") || cam.label.toLowerCase().includes("environment")) {
+              cameraId = cam.id;
+              break;
+            }
+          }
+
           html5QrCode.start(
             cameraId, 
             { fps: 10, qrbox: 250 },
@@ -102,6 +110,8 @@
             },
             errorMessage => {}
           ).catch(err => console.error(err));
+        } else {
+          alert("No camera found on this device.");
         }
       }).catch(err => console.error(err));
     }
