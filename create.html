@@ -107,37 +107,34 @@
         correctLevel: QRCode.CorrectLevel.H
       });
 
+      // Show download button
       setTimeout(() => {
         document.getElementById("download-btn").style.display = "block";
       }, 500);
     }
 
     function downloadQR() {
-      // Try to find canvas first (mobile friendly)
       const canvas = document.querySelector("#qrcode canvas");
-      let dataURL;
-
-      if (canvas) {
-        dataURL = canvas.toDataURL("image/png");
-      } else {
-        const img = document.querySelector("#qrcode img");
-        if (!img) {
-          alert("No QR code found!");
-          return;
-        }
-        dataURL = img.src;
+      if (!canvas) {
+        alert("Please generate a QR code first!");
+        return;
       }
 
-      const link = document.createElement("a");
-      link.href = dataURL;
-      link.download = "ishmael-priscilla-qr.png";
+      // Convert canvas to blob for reliable downloads
+      canvas.toBlob(function(blob) {
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        link.href = url;
+        link.download = "ishmael-priscilla-qr.png";
 
-      // Mobile fallback
-      if (/iPhone|iPad|iPod|Android/i.test(navigator.userAgent)) {
-        window.open(dataURL, "_blank");
-      } else {
+        // ✅ Works on Android & iPhone
+        document.body.appendChild(link);
         link.click();
-      }
+        document.body.removeChild(link);
+
+        // Cleanup
+        URL.revokeObjectURL(url);
+      }, "image/png");
     }
   </script>
 </body>
