@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Guest </title>
+  <title>QR Code Scanner</title>
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -66,6 +66,7 @@
 
       Html5Qrcode.getCameras().then(devices => {
         if (devices && devices.length) {
+          // Pick the back camera
           let cameraId = devices[0].id;
           for (let cam of devices) {
             if (cam.label.toLowerCase().includes("back") || cam.label.toLowerCase().includes("rear") || cam.label.toLowerCase().includes("environment")) {
@@ -78,11 +79,18 @@
             cameraId,
             { fps: 10, qrbox: 250 },
             qrCodeMessage => {
+              // Display scanned text
               resultElement.innerText = "Scanned Result: " + qrCodeMessage;
-              html5QrCode.stop();
+
+              // Stop scanner and clear camera
+              html5QrCode.stop().then(() => {
+                reader.innerHTML = ""; // remove camera feed
+              }).catch(err => console.error("Stop failed:", err));
             },
-            errorMessage => {}
-          ).catch(err => console.error(err));
+            errorMessage => {
+              // ignore scanning errors
+            }
+          ).catch(err => console.error("Start failed:", err));
         } else {
           alert("No camera found on this device.");
         }
@@ -93,7 +101,7 @@
       if (html5QrCode) {
         html5QrCode.stop().then(() => {
           document.getElementById("reader").innerHTML = "";
-        });
+        }).catch(err => console.error(err));
       }
     }
   </script>
