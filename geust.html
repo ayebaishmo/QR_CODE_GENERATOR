@@ -68,6 +68,36 @@
       margin-top: 50px;
       font-size: 18px;
     }
+    .buttonBack {
+        background-color: #803412;
+        color: white;
+        border: none;
+        padding: 12px 24px;
+        border-radius: 8px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+        font-family: "Poppins", sans-serif;
+        }
+
+        .buttonBack:hover {
+        background-color: #a34d1d;
+        transform: translateY(-2px);
+        box-shadow: 0 6px 14px rgba(0, 0, 0, 0.2);
+        }
+
+        .buttonBack:active {
+        transform: translateY(0);
+        box-shadow: 0 3px 8px rgba(0, 0, 0, 0.15);
+        }
+
+        .buttonBack:focus {
+        outline: none;
+        box-shadow: 0 0 0 3px rgba(128, 52, 18, 0.3);
+        }
+
   </style>
 
   <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
@@ -122,7 +152,7 @@
   </script>
 </head>
 <body>
-    <button>Scan code instead</button>
+    <button onclick="window.location.href='index.html'" class="buttonBack">Scan code instead</button>
   <h1>Wedding Guest List</h1>
 
   <div class="search-container">
