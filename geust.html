@@ -37,6 +37,7 @@
       box-shadow: 0 0 5px rgba(128, 52, 18, 0.5);
     }
 
+    /* 🎨 Table Styling */
     table {
       border-collapse: collapse;
       width: 80%;
@@ -68,36 +69,44 @@
       margin-top: 50px;
       font-size: 18px;
     }
-    .buttonBack {
-        background-color: #803412;
-        color: white;
-        border: none;
-        padding: 12px 24px;
-        border-radius: 8px;
-        font-size: 16px;
-        font-weight: 600;
-        cursor: pointer;
-        transition: all 0.3s ease;
-        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
-        font-family: "Poppins", sans-serif;
-        }
 
-        .buttonBack:hover {
-        background-color: #a34d1d;
-        transform: translateY(-2px);
-        box-shadow: 0 6px 14px rgba(0, 0, 0, 0.2);
-        }
+    /* 🎯 Button Styling */
+    .buttonBack, .printButton {
+      background-color: #803412;
+      color: white;
+      border: none;
+      padding: 12px 24px;
+      border-radius: 8px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+      font-family: "Poppins", sans-serif;
+      margin: 10px;
+    }
+    .buttonBack:hover, .printButton:hover {
+      background-color: #a34d1d;
+      transform: translateY(-2px);
+      box-shadow: 0 6px 14px rgba(0, 0, 0, 0.2);
+    }
+    .buttonBack:active, .printButton:active {
+      transform: translateY(0);
+      box-shadow: 0 3px 8px rgba(0, 0, 0, 0.15);
+    }
 
-        .buttonBack:active {
-        transform: translateY(0);
-        box-shadow: 0 3px 8px rgba(0, 0, 0, 0.15);
-        }
-
-        .buttonBack:focus {
-        outline: none;
-        box-shadow: 0 0 0 3px rgba(128, 52, 18, 0.3);
-        }
-
+    /* 🖨️ Hide buttons during print */
+    @media print {
+      .buttonBack, .printButton, .search-container {
+        display: none;
+      }
+      body {
+        background: white;
+      }
+      table {
+        box-shadow: none;
+      }
+    }
   </style>
 
   <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
@@ -136,23 +145,28 @@
         });
     }
 
-    // 🔍 Filter table rows as user types
+    // 🔍 Search filter
     function searchGuest() {
       const input = document.getElementById('searchInput').value.toLowerCase();
       const rows = document.querySelectorAll('#guestTable tbody tr');
       rows.forEach(row => {
         const name = row.cells[0].textContent.toLowerCase();
-        if (name.includes(input)) {
-          row.style.display = '';
-        } else {
-          row.style.display = 'none';
-        }
+        row.style.display = name.includes(input) ? '' : 'none';
       });
+    }
+
+    // 🖨️ Print only the guest list
+    function printGuestList() {
+      window.print();
     }
   </script>
 </head>
 <body>
+  <div style="text-align: center;">
     <button onclick="window.location.href='index.html'" class="buttonBack">Scan code instead</button>
+    <button onclick="printGuestList()" class="printButton">🖨️ Print Guest List</button>
+  </div>
+
   <h1>Wedding Guest List</h1>
 
   <div class="search-container">
